@@ -18,3 +18,28 @@ from matplotlib import pyplot as plt
 gsheetid = "13vGwyp6um4ZnE0zxwehtKVxt9_PeRPBrgxXnhRP2KGE"
 sheet_name = "Data"
 gsheet_url = "https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}".format(gsheetid, sheet_name)
+
+# Check Data Reading
+
+df = pd.read_csv(gsheet_url)
+df.head(10)
+
+# Converting Month to DateTime Object
+
+df["Month"] = pd.to_datetime(df["Month"], format = "%b-%y")
+
+# Removing comma in numeric columns and convert it into INT object
+
+df["Assets & Equity"] = df["Assets & Equity"].replace(",", "", regex = True).astype(int)
+df["Long Term Loans"] = df["Long Term Loans"].replace(",", "", regex = True).astype(int)
+df["Total Net Worth"] = df["Total Net Worth"].replace(",", "", regex = True).astype(int)
+
+# Removing % String and converting it into INT object
+
+df["Net Worth Change (%)"] = df["Net Worth Change (%)"][1:].replace("%", "", regex = True).astype(float) / 100
+df["Primary Expenses to Net Salary"] = df["Primary Expenses to Net Salary"][1:].replace("%", "", regex = True).astype(float) / 100
+df["Investing Rate to Net Salary"] = df["Investing Rate to Net Salary"][1:].replace("%", "", regex = True).astype(float) / 100
+df["Spending Rate to Net Salary"] = df["Spending Rate to Net Salary"][1:].replace("%", "", regex = True).astype(float) / 100
+
+# Renaming one column to a shorter name
+df.rename(columns = {"Mental Health (1 - Very Dissatisfied, 5 - Very Satisfied)": "Mental Health"}, inplace = True)
