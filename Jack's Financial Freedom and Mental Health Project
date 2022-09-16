@@ -43,3 +43,39 @@ df["Spending Rate to Net Salary"] = df["Spending Rate to Net Salary"][1:].replac
 
 # Renaming one column to a shorter name
 df.rename(columns = {"Mental Health (1 - Very Dissatisfied, 5 - Very Satisfied)": "Mental Health"}, inplace = True)
+
+# Building Overlay Plot
+plt.style.use("seaborn")
+plt.rcParams["figure.figsize"] = (20, 10)
+plt.rcParams['axes.titlesize'] = 30
+plt.rcParams['xtick.labelsize'] = 15
+plt.rcParams['ytick.labelsize'] = 20
+plt.rcParams['axes.labelsize'] = 20
+
+date = df["Month"]
+net_worth = df["Total Net Worth"]
+mental_health = df["Average Mental Health Past 4 Weeks"]
+
+fig, ax1 = plt.subplots()
+fig.tight_layout()
+x_indexes = np.arange(len(date))
+
+# AX1 Layout
+color1 = 'darkgreen'
+ax1.plot(date, net_worth,
+        color = color1,
+        linestyle = "-")
+ax1.set_ylabel("Net Worth", color = color1, loc = 'bottom')
+ax1.tick_params(axis = 'y', labelcolor = color1)
+
+# AX2 Layout
+ax2 = ax1.twinx()
+color2 = 'darkgoldenrod'
+ax2.plot(date, mental_health,
+        color = color2,
+        linestyle = '--',
+        marker = '*')
+ax2.set_ylabel("Average Mental Health past four weeks", color = color2, loc = 'top')
+ax2.tick_params(axis = 'y', labelcolor = color2)
+
+
