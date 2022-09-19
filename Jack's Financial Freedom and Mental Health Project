@@ -44,38 +44,102 @@ df["Spending Rate to Net Salary"] = df["Spending Rate to Net Salary"][1:].replac
 # Renaming one column to a shorter name
 df.rename(columns = {"Mental Health (1 - Very Dissatisfied, 5 - Very Satisfied)": "Mental Health"}, inplace = True)
 
-# Building Overlay Plot
-plt.style.use("seaborn")
+___________________________________________________________________________________________________________________________________________________________
+
+# Setting Up Figures
+
+plt.style.use("seaborn-pastel")
 plt.rcParams["figure.figsize"] = (20, 10)
 plt.rcParams['axes.titlesize'] = 30
 plt.rcParams['xtick.labelsize'] = 15
-plt.rcParams['ytick.labelsize'] = 20
-plt.rcParams['axes.labelsize'] = 20
+plt.rcParams['ytick.labelsize'] = 15
+plt.rcParams['axes.labelsize'] = 16
+plt.rcParams['font.family'] = 'Arial'
+plt.rcParams['axes.titlesize'] = 35
+plt.rcParams['axes.xmargin'] = 0.03
+
+# Setting Up Variables
 
 date = df["Month"]
 net_worth = df["Total Net Worth"]
-mental_health = df["Average Mental Health Past 4 Weeks"]
+primary_exp = df["Primary Expenses to Net Salary"]
+investing_rate = df["Investing Rate to Net Salary"]
+spending_rate = df["Spending Rate to Net Salary"]
+mental_health = df["Mental Health"]
+avg_mental_health = df["Average Mental Health Past 4 Weeks"]
 
-fig, ax1 = plt.subplots()
+# Figure 1
+
+fig1, ax1 = plt.subplots()
 fig.tight_layout()
-x_indexes = np.arange(len(date))
+# x_indexes = np.arange(len(date))
 
-# AX1 Layout
+# Figure 1, AX1 Layout
+
 color1 = 'darkgreen'
 ax1.plot(date, net_worth,
         color = color1,
         linestyle = "-")
 ax1.set_ylabel("Net Worth", color = color1, loc = 'bottom')
 ax1.tick_params(axis = 'y', labelcolor = color1)
+# ax1.set_xticks(x_indexes)
+# ax1.set_xticklabels(date_list)
 
-# AX2 Layout
+# Figure 1, AX2 Layout
+
 ax2 = ax1.twinx()
 color2 = 'darkgoldenrod'
-ax2.plot(date, mental_health,
+ax2.plot(date, avg_mental_health,
         color = color2,
         linestyle = '--',
         marker = '*')
-ax2.set_ylabel("Average Mental Health past four weeks", color = color2, loc = 'top')
+ax2.set_ylabel("Average Mental Health Past Four Weeks", color = color2, loc = 'top')
 ax2.tick_params(axis = 'y', labelcolor = color2)
+
+plt.title("Net Worth and Happiness", loc = 'center' , x = 0.19, y = 1, pad = -42, color = 'dimgray')
+plt.axvline(x = 17900, color = 'gainsboro', ymax = 0.65)
+plt.axvline(x = 18265, color = 'gainsboro', ymax = 0.65)
+plt.axvline(x = 18350, color = 'gainsboro', ymax = 0.70)
+plt.axvline(x = 18440, color = 'gainsboro', ymax = 0.80)
+plt.axvline(x = 18780, color = 'gainsboro', ymax = 0.85)
+plt.axvline(x = 18900, color = 'gainsboro', ymax = 0.90)
+plt.axvline(x = 19150, color = 'gainsboro', ymax = 1)
+
+# Figure 2
+
+fig2, ax1a = plt.subplots()
+plt.rcParams["figure.figsize"] = (20, 10)
+
+# Removing Discrepancies From "Spending Rate" Variables
+# Invalid Data due to Job Change affecting Salary Rate
+
+mark = df["Spending Rate to Net Salary"] < 0.5
+new_df = df[mark]
+
+investing_rate = new_df["Investing Rate to Net Salary"]
+spending_rate = new_df["Spending Rate to Net Salary"]
+mental_health = new_df["Mental Health"]
+
+# Setting Up Marker Size Variable
+
+s = []
+
+for n in mental_health:
+    if n < 3:
+        n = n + 100
+        s.append(n)
+    else: 
+        n = n ** 5.5
+        s.append(n)
+        
+# Figure 2, AX1A Layout
+
+ax1a.scatter(investing_rate, spending_rate, 
+             s = s, c = mental_health, cmap = "YlGn",
+            linewidth = 1, alpha = 0.6, edgecolor = 'black')
+ax1a.set_xlabel("Spending Rate")
+ax1a.set_ylabel("Investing Rate")
+plt.tight_layout()
+
 
 
