@@ -42,9 +42,10 @@ df["Investing Rate to Net Salary"] = df["Investing Rate to Net Salary"][1:].repl
 df["Spending Rate to Net Salary"] = df["Spending Rate to Net Salary"][1:].replace("%", "", regex = True).astype(float) / 100
 
 # Renaming one column to a shorter name
-df.rename(columns = {"Mental Health (1 - Very Dissatisfied, 5 - Very Satisfied)": "Mental Health"}, inplace = True)
+df.rename(columns = {"Mental Well Being (1 - Very Dissatisfied, 5 - Very Satisfied)": "Mental Well Being"}, inplace = True)
 
 ___________________________________________________________________________________________________________________________________________________________
+
 
 # Setting Up Figures
 
@@ -65,14 +66,14 @@ net_worth = df["Total Net Worth"]
 primary_exp = df["Primary Expenses to Net Salary"]
 investing_rate = df["Investing Rate to Net Salary"]
 spending_rate = df["Spending Rate to Net Salary"]
-mental_health = df["Mental Health"]
-avg_mental_health = df["Average Mental Health Past 4 Weeks"]
+mental_wellbeing = df["Mental Well Being"]
+avg_mental_wellbeing = df["Average Mental Well Being Past 4 Months"]
 
 # Figure 1
 
 fig1, ax1 = plt.subplots()
-fig.tight_layout()
-# x_indexes = np.arange(len(date))
+fig1.tight_layout()
+date_value = matplotlib.dates.date2num(df['Month'])
 
 # Figure 1, AX1 Layout
 
@@ -82,21 +83,22 @@ ax1.plot(date, net_worth,
         linestyle = "-")
 ax1.set_ylabel("Net Worth", color = color1, loc = 'bottom')
 ax1.tick_params(axis = 'y', labelcolor = color1)
-# ax1.set_xticks(x_indexes)
-# ax1.set_xticklabels(date_list)
+ax1.tick_params(axis = 'x', rotation = 90)
+ax1.set_xticks(date_value)
 
 # Figure 1, AX2 Layout
 
 ax2 = ax1.twinx()
 color2 = 'darkgoldenrod'
-ax2.plot(date, avg_mental_health,
+ax2.plot(date, avg_mental_wellbeing,
         color = color2,
         linestyle = '--',
         marker = '*')
-ax2.set_ylabel("Average Mental Health Past Four Weeks", color = color2, loc = 'top')
+ax2.set_ylabel("Average Mental Well Being - 4 Month Moving Average", color = color2, loc = 'top')
 ax2.tick_params(axis = 'y', labelcolor = color2)
+ax2.set_xticks(date_value)
 
-plt.title("Net Worth and Happiness", loc = 'center' , x = 0.19, y = 1, pad = -42, color = 'dimgray')
+plt.title("Net Worth and Mental Well Being (4 Month Moving Average)", loc = 'center' , x = 0.35, y = 1, pad = -42, color = 'dimgray')
 plt.axvline(x = 17900, color = 'gainsboro', ymax = 0.65)
 plt.axvline(x = 18265, color = 'gainsboro', ymax = 0.65)
 plt.axvline(x = 18350, color = 'gainsboro', ymax = 0.70)
@@ -116,15 +118,16 @@ plt.rcParams["figure.figsize"] = (20, 10)
 mark = df["Spending Rate to Net Salary"] < 0.5
 new_df = df[mark]
 
-investing_rate = new_df["Investing Rate to Net Salary"]
-spending_rate = new_df["Spending Rate to Net Salary"]
-mental_health = new_df["Mental Health"]
+new_investing_rate = new_df["Investing Rate to Net Salary"]
+new_spending_rate = new_df["Spending Rate to Net Salary"]
+new_mental_wellbeing = new_df["Mental Well Being"]
 
 # Setting Up Marker Size Variable
 
 s = []
+cmap = "YlGn"
 
-for n in mental_health:
+for n in new_mental_wellbeing:
     if n < 3:
         n = n + 100
         s.append(n)
@@ -134,12 +137,23 @@ for n in mental_health:
         
 # Figure 2, AX1A Layout
 
-ax1a.scatter(investing_rate, spending_rate, 
-             s = s, c = mental_health, cmap = "YlGn",
+ax1a.scatter(new_investing_rate, new_spending_rate, 
+             s = s, c = new_mental_wellbeing, cmap = cmap,
             linewidth = 1, alpha = 0.6, edgecolor = 'black')
-ax1a.set_xlabel("Spending Rate")
-ax1a.set_ylabel("Investing Rate")
+
+ax1a.set_xlabel("Investing Rate")
+ax1a.set_ylabel("Spending Rate")
 plt.tight_layout()
+
+# Add Circle Patch on Data Highlights and Color Bar
+
+circle = plt.Circle((0.20,0.32), 0.08, 
+                    alpha = 0.1, 
+                    fc = 'grey', ec = 'black')
+ax1a.add_patch(circle)
+
+norm = mpl.colors.Normalize(vmin = 0, vmax = 5)
+cbar = fig2.colorbar(mpl.cm.ScalarMappable(norm = norm, cmap = cmap), ax = ax1a, label = "Mental Well Being (The Bigger the Happier)")
 
 
 
