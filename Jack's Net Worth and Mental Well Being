@@ -202,11 +202,11 @@ filterwarnings('ignore')
 
 r, p = stats.pearsonr(net_worth, avg_mental_wellbeing)
 
-graph = sns.regplot(net_worth, avg_mental_wellbeing, marker = '+')
-graph.text(-50000, 5, 'r = {}, p = {}'.format(r, p))
+fig, ax =plt.subplots()
 
-# r = 0.713763702610269, p = 1.7826637967217292e-08
-# Findings suggest strong positive relationship between net worth and average mental well being past four months
+graph = sns.regplot(net_worth, avg_mental_wellbeing, marker = '+', ax = ax)
+ax.text(-50000, 5, 'r = {}, p = {}'.format(r, p))
+plt.title("Correlation between Net Worth & Mental Well-Being (4 Month Moving Average)", loc = 'left', color = 'black', fontsize = 20)
 
 ___________________________________________________________________________________________________________________________________________________________
 
