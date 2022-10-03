@@ -9,12 +9,16 @@
 ___________________________________________________________________________________________________________________________________________________________
 
 # Import working packages to IDE
+
 import pandas as pd
-import datetime
+import numpy as np
+import seaborn as sns
+import matplotlib as mpl
+import matplotlib.dates
+from datetime import datetime, date
 from matplotlib import pyplot as plt
 %matplotlib inline
 
-# Convert Google Sheets to CSV & Read Data with Pandas
 gsheetid = "13vGwyp6um4ZnE0zxwehtKVxt9_PeRPBrgxXnhRP2KGE"
 sheet_name = "Data"
 gsheet_url = "https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}".format(gsheetid, sheet_name)
@@ -22,7 +26,7 @@ gsheet_url = "https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&shee
 # Check Data Reading
 
 df = pd.read_csv(gsheet_url)
-df.head(10)
+df.dropna(inplace = True)
 
 # Converting Month to DateTime Object
 
@@ -56,6 +60,7 @@ plt.rcParams['xtick.labelsize'] = 15
 plt.rcParams['ytick.labelsize'] = 15
 plt.rcParams['axes.labelsize'] = 16
 plt.rcParams['font.family'] = 'Arial'
+plt.rcParams['font.size'] = 16
 plt.rcParams['axes.titlesize'] = 35
 plt.rcParams['axes.xmargin'] = 0.03
 
@@ -73,6 +78,7 @@ avg_mental_wellbeing = df["Average Mental Well Being Past 4 Months"]
 
 fig1, ax1 = plt.subplots()
 fig1.tight_layout()
+fig1.patch.set_facecolor('white')
 date_value = matplotlib.dates.date2num(df['Month'])
 
 # Figure 1, AX1 Layout
@@ -86,6 +92,7 @@ ax1.tick_params(axis = 'y', labelcolor = color1)
 ax1.tick_params(axis = 'x', rotation = 90)
 ax1.set_xticks(date_value)
 
+
 # Figure 1, AX2 Layout
 
 ax2 = ax1.twinx()
@@ -98,19 +105,47 @@ ax2.set_ylabel("Average Mental Well Being - 4 Month Moving Average", color = col
 ax2.tick_params(axis = 'y', labelcolor = color2)
 ax2.set_xticks(date_value)
 
+# Figure 1, AX1 Texts and Description
+
+# position
+x1 = 17900
+x2 = 18265
+x3 = 18350
+x4 = 18440
+x5 = 18780
+x6 = 18900
+x7 = 19150
+width = 20 # space between line and text
+
 plt.title("Net Worth and Mental Well Being (4 Month Moving Average)", loc = 'center' , x = 0.35, y = 1, pad = -42, color = 'dimgray')
-plt.axvline(x = 17900, color = 'gainsboro', ymax = 0.65)
-plt.axvline(x = 18265, color = 'gainsboro', ymax = 0.65)
-plt.axvline(x = 18350, color = 'gainsboro', ymax = 0.70)
-plt.axvline(x = 18440, color = 'gainsboro', ymax = 0.80)
-plt.axvline(x = 18780, color = 'gainsboro', ymax = 0.85)
-plt.axvline(x = 18900, color = 'gainsboro', ymax = 0.90)
-plt.axvline(x = 19150, color = 'gainsboro', ymax = 1)
+plt.axvline(x = x1, color = 'gainsboro', ymax = 0.65)
+plt.axvline(x = x2, color = 'gainsboro', ymax = 0.80)
+plt.axvline(x = x3, color = 'gainsboro', ymax = 0.80)
+plt.axvline(x = x4, color = 'gainsboro', ymax = 0.85)
+plt.axvline(x = x5, color = 'gainsboro', ymax = 0.85)
+plt.axvline(x = x6, color = 'gainsboro', ymax = 0.90)
+plt.axvline(x = x7, color = 'gainsboro', ymax = 1)
+
+t1 = "Getting into relationship"
+t2 = "Relationship breakup"
+t3 = "Pandamic begins"
+t4 = "Lockdown restriction lifted"
+t5 = "Delta Lockdown"
+t6 = "Lockdown restriction lifted"
+t7 = "Moving to Japan"
+
+ax1.text(x1 - width, 20000, t1, rotation = 90, alpha = 0.75)
+ax1.text(x2 - width, 60000, t2, rotation = 90, alpha = 0.75)
+ax1.text(x3 - width, 70000, t3, rotation = 90, alpha = 0.75)
+ax1.text(x4 - width, 60000, t4, rotation = 90, alpha = 0.75)
+ax1.text(x5 - width, 80000, t5, rotation = 90, alpha = 0.75)
+ax1.text(x6 - width, 70000, t6, rotation = 90, alpha = 0.75)
+ax1.text(x7 - width, 65000, t7, rotation = 90, alpha = 0.75)
 
 # Figure 2
 
 fig2, ax1a = plt.subplots()
-plt.rcParams["figure.figsize"] = (20, 10)
+fig2.patch.set_facecolor('white')
 
 # Removing Discrepancies From "Spending Rate" Variables
 # Invalid Data due to Job Change affecting Salary Rate
@@ -120,6 +155,8 @@ new_df = df[mark]
 
 new_investing_rate = new_df["Investing Rate to Net Salary"]
 new_spending_rate = new_df["Spending Rate to Net Salary"]
+new_primary_exp = new_df["Primary Expenses to Net Salary"]
+new_avg_mental_wellbeing = new_df["Average Mental Well Being Past 4 Months"]
 new_mental_wellbeing = new_df["Mental Well Being"]
 
 # Setting Up Marker Size Variable
@@ -155,5 +192,49 @@ ax1a.add_patch(circle)
 norm = mpl.colors.Normalize(vmin = 0, vmax = 5)
 cbar = fig2.colorbar(mpl.cm.ScalarMappable(norm = norm, cmap = cmap), ax = ax1a, label = "Mental Well Being (The Bigger the Happier)")
 
+___________________________________________________________________________________________________________________________________________________________
 
+# Additional Research 
 
+from warnings import filterwarnings
+import scipy.stats as stats
+filterwarnings('ignore')
+
+r, p = stats.pearsonr(net_worth, avg_mental_wellbeing)
+
+graph = sns.regplot(net_worth, avg_mental_wellbeing, marker = '+')
+graph.text(-50000, 5, 'r = {}, p = {}'.format(r, p))
+
+# r = 0.713763702610269, p = 1.7826637967217292e-08
+# Findings suggest strong positive relationship between net worth and average mental well being past four months
+
+___________________________________________________________________________________________________________________________________________________________
+
+from warnings import filterwarnings
+import scipy.stats as stats
+filterwarnings('ignore')
+sns.set_color_codes('pastel')
+
+r1, p1 = stats.pearsonr(new_mental_wellbeing, new_primary_exp) # Removing discrepancies
+r2, p2 = stats.pearsonr(new_mental_wellbeing, new_spending_rate) # Removing discrepancies
+r3, p3 = stats.pearsonr(new_mental_wellbeing, new_investing_rate) # Removing discrepancies
+
+fig1, (cor1, cor2, cor3) = plt.subplots(nrows = 3, ncols = 1, sharex = True, figsize = (20,20), gridspec_kw={'hspace': 0})
+
+sns.regplot(new_mental_wellbeing, new_primary_exp , marker = '+',  ax = cor1, color = "b", )
+sns.regplot(new_mental_wellbeing, new_spending_rate, marker = '+',  ax = cor2, color = 'r')
+sns.regplot(new_mental_wellbeing, new_investing_rate, marker = '+',  ax = cor3, color = "g")
+
+cor1.text(1.05, 0.45, "Correlation between Primary Expenses % with Mental Well-Being")
+cor1.text(1.05, 0.43, 'r = {} p = {}'.format(r1, p1))
+cor2.text(1.05, 0.43, "Correlation between Spending Rate % with Mental Well-Being")
+cor2.text(1.05, 0.415, 'r = {} p = {}'.format(r2, p2))
+cor3.text(1.05, 0.36, "Correlation between Investing Rate % with Mental Well-Being")
+cor3.text(1.05, 0.338, 'r = {} p = {}'.format(r3, p3))
+
+cor1.set_ylabel('')
+cor2.set_ylabel('')
+cor3.set_ylabel('')
+
+cor1.label_outer()
+cor2.label_outer()
