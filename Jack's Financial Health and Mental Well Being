@@ -1,13 +1,3 @@
-# Objectives of this Data Project
-- To observe and analysis personal mental and financial health progress across 4 years period 2018-2022
-- To determine relationship between personal mental health and financial health and other event factors in my life 
-- To judge the effectiveness of personal financial strategy and to access how it influences of personal mental health 
-- To conclude how does financial health affect personal mental health and what can be done in future to achieve both financial and mental health goals
-- This project also serve as a portfolio for employers to access my skillset especially on Data Analytics, Google Excel & Python (Pandas & Matplotlib)
-
-
-___________________________________________________________________________________________________________________________________________________________
-
 # Import working packages to IDE
 
 import pandas as pd
@@ -18,6 +8,8 @@ import matplotlib.dates
 from datetime import datetime, date
 from matplotlib import pyplot as plt
 %matplotlib inline
+
+# Importing Data from Google Sheet
 
 gsheetid = "13vGwyp6um4ZnE0zxwehtKVxt9_PeRPBrgxXnhRP2KGE"
 sheet_name = "Data"
@@ -101,7 +93,7 @@ ax2.plot(date, avg_mental_wellbeing,
         color = color2,
         linestyle = '--',
         marker = '*')
-ax2.set_ylabel("Average Mental Well Being - 4 Month Moving Average", color = color2, loc = 'top')
+ax2.set_ylabel("Average Mental Well-Being - 4 Month Moving Average", color = color2, loc = 'top')
 ax2.tick_params(axis = 'y', labelcolor = color2)
 ax2.set_xticks(date_value)
 
@@ -117,7 +109,7 @@ x6 = 18900
 x7 = 19150
 width = 20 # space between line and text
 
-plt.title("Net Worth and Mental Well Being (4 Month Moving Average)", loc = 'center' , x = 0.35, y = 1, pad = -42, color = 'dimgray')
+plt.title("Net Worth and Mental Well-Being (4 Month Moving Average)", loc = 'center' , x = 0.35, y = 1, pad = -42, color = 'dimgray')
 plt.axvline(x = x1, color = 'gainsboro', ymax = 0.65)
 plt.axvline(x = x2, color = 'gainsboro', ymax = 0.80)
 plt.axvline(x = x3, color = 'gainsboro', ymax = 0.80)
@@ -180,6 +172,7 @@ ax1a.scatter(new_investing_rate, new_spending_rate,
 
 ax1a.set_xlabel("Investing Rate")
 ax1a.set_ylabel("Spending Rate")
+ax1a.text(0.266, 0.438, 'The Bigger and The Greener, The Happier', fontstyle = 'italic')
 plt.tight_layout()
 
 # Add Circle Patch on Data Highlights and Color Bar
@@ -190,11 +183,12 @@ circle = plt.Circle((0.20,0.32), 0.08,
 ax1a.add_patch(circle)
 
 norm = mpl.colors.Normalize(vmin = 0, vmax = 5)
-cbar = fig2.colorbar(mpl.cm.ScalarMappable(norm = norm, cmap = cmap), ax = ax1a, label = "Mental Well Being (The Bigger the Happier)")
+cbar = fig2.colorbar(mpl.cm.ScalarMappable(norm = norm, cmap = cmap), ax = ax1a, label = "Mental Well-Being")
 
 ___________________________________________________________________________________________________________________________________________________________
 
-# Additional Research 
+# New Code Bar
+# Check Pearson Correlation R between Net Worth and Mental Well Being
 
 from warnings import filterwarnings
 import scipy.stats as stats
@@ -203,12 +197,16 @@ filterwarnings('ignore')
 r, p = stats.pearsonr(net_worth, avg_mental_wellbeing)
 
 fig, ax =plt.subplots()
+fig.patch.set_facecolor('white')
 
 graph = sns.regplot(net_worth, avg_mental_wellbeing, marker = '+', ax = ax)
 ax.text(-50000, 5, 'r = {}, p = {}'.format(r, p))
 plt.title("Correlation between Net Worth & Mental Well-Being (4 Month Moving Average)", loc = 'left', color = 'black', fontsize = 20)
 
 ___________________________________________________________________________________________________________________________________________________________
+
+# New Code Bar
+# Check Pearson Correlation R between Net Worth and Investing, Spending and Primary Exp 
 
 from warnings import filterwarnings
 import scipy.stats as stats
